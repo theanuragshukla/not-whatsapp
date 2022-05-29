@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	
+	<title></title>
+	<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+	<div class="super">
+	<div class="main">
+		<div class="heading">
+			<h1>Dashboard</h1>
+		</div>
+		<h2 id="name"></h2>
+
+		<div class="inpSuper ">
+		<div class="icon">
+
+	<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+</svg>
+
+		</div>
+		<input id="user" class="inp" type="text" readonly  placeholder="username">
+</div>
+	<div class="inpSuper">
+	<div class="icon">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+  <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z"/>
+</svg>
+</div>
+
+						<input class="inp" id="email" readonly type="email" placeholder="email">
+</div>
+</div>
+	
+		<button onclick="logout()">logout</button>
+	</div>
+	</div>
+</body>
+<script>
+
+	var data;
+	window.onload=()=>{
+	const verify =async ()=>{
+		await fetch('/checkAuth', {
+			method: 'GET',
+			crossdomain: true,
+			withCredentials:'include'
+		})
+			.then(res => res.json())
+			.then(res =>manageAuth(res))
+	}
+	const manageAuth=(val)=>{
+		data=val
+		if(!val.result){
+			location.href='/'
+		}else{
+			document.getElementById('name').innerHTML="hello, "+data.data.fname+" "+data.data.lname
+				
+			document.getElementById('user').value=data.data.username
+
+			document.getElementById('email').value=data.data.email
+		}
+	}
+	verify()
+
+		}
+
+	const logout=async ()=>{
+		await fetch('/log-me-out', {
+			method: 'GET',
+			crossdomain: true,
+			withCredentials:'include'
+		})
+		.then(res => res.json())
+				.then(res=>{
+						if(res.status){
+								location.href="/"
+							}
+						else
+						alert('something went wrong')
+					})
+	
+		}
+
+</script>
+</html>
