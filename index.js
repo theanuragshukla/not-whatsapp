@@ -8,13 +8,35 @@ const saltRounds=10
 const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET_KEY
 const cookieParser=require('cookie-parser')
-
+const {engine} = require('express-handlebars')
+const excludedRoutes = ['/','/new-user','/let-me-in','/add-new-user']
 app.use('/static',express.static(__dirname + "/static"))
 app.use(express.json());
 app.use(express.urlencoded({
 	extended: true
 }));
 app.use(cookieParser());
+app.use(async (req, res, next) => {
+	const url = req.originalUrl
+	if(excludedRoutes.includes(url)){
+		next()
+		return
+	}
+	const token = req.cookies.token
+	const authData = await verifyToken(token)
+	if (!authData.result)
+		res.redirect(`http://${req.header('host')}`)
+	else
+		next()
+})
+app.set('view engine', 'hbs');
+
+app.engine('hbs', engine({
+	layoutsDir: __dirname + '/views/layouts',
+	extname: 'hbs',
+	defaultLayout:false,
+	partialsDir: __dirname + '/views/partials/'
+}));
 
 app.get('/',(req,res)=>{
 	res.status=200
@@ -25,7 +47,28 @@ app.get('/new-user',(req,res)=>{
 	res.status=200
 	res.sendFile(__dirname+'/signup.html')
 })
-
+app.get('/user/:id',async (req,res)=>{
+	//	const token = req.cookies.token
+	//	const authData = await verifyToken(token)
+/*	const username = req.params.id
+	const query = `
+	SELECT * FROM users WHERE username = $1;
+	`;
+	const values = [username];
+	const { rows } = await db.query(query, values);
+	if(rows.length==0){
+		res.send({result:false,message:"user doesn't exists"})
+	}else{
+		const match = false
+		if(match){
+			res.send({status:true})
+		}
+		else{
+			res.send({status:false,result:"wrong username or password"})
+		}
+	}*/
+	res.render('profile',{user:req.params.id})
+})
 app.post("/add-new-user",async (req,res)=>{
 	const userquery = `
 	SELECT * FROM users WHERE username = $1;
@@ -61,6 +104,10 @@ app.post("/add-new-user",async (req,res)=>{
 
 app.get('/dashboard',(req,res)=>{
 	res.sendFile(__dirname+'/dash.html')
+})
+
+app.get('/chat',(req,res)=>{
+	res.status(200).sendFile(__dirname+'/chat.html')
 })
 
 app.post("/let-me-in",async (req,res)=>{

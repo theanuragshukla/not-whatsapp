@@ -1,0 +1,54 @@
+.super {
+	justify-content: flex-start;
+}
+.main {
+	width: 100%;
+}
+.box {
+	width: 100%;
+	background-color: #2b2b2b;
+	padding: 20px;
+	margin-bottom: 10px;
+}
+.img {
+	height: 200px;
+	width: 200px;
+	border-radius: 50%;
+	background-image: url(https://source.unsplash.com/random);
+	background-position: center;
+	background-size: cover;
+	margin-bottom: 10px;
+}
+.name ,.username{
+	margin-bottom: 10px;
+}
+.name h1{
+	font-size: 1.8rem;
+	font-weight: 500;
+}
+.username h3 {
+	font-weight:800;
+	font-size:1rem
+}
+.icons {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 60px;
+}
+.icon {
+	height: 60px;
+	width: 60px;
+	border-radius: 50%;
+	background-color: #fff;
+	margin: 0 5px;
+}
+.about h2 {
+	text-align: left;
+	font-weight: 500;
+	font-size: 1.3rem;
+}
+.about p {
+	font-weight: 300;
+	font-size: 1rem;
+}

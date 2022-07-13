@@ -1,0 +1,121 @@
+.super {
+	justify-content: flex-start;
+}
+
+.main {
+	width: 100%;
+	border-radius: 0;
+	min-height: calc(100vh - 65px);
+	justify-content: flex-start;
+	flex-direction: column;
+	position: relative;
+}
+.brand {
+	display: flex;
+	justify-content: center;
+	align-items:center ;
+}
+.backIcon {
+	width: 30px;
+	height: 100%;
+}
+.backIcon>svg {
+	padding: 0;
+	margin: 0;
+	height: 100%;
+	width: 100%;
+}
+.dpDiv,.dpDiv>div {
+	height: 45px;
+	width: 45px;
+}
+.tools {
+	width: 100%;
+	height: 65px;
+	position: absolute;
+	bottom: 5px;
+	display: flex;
+	padding: 0 5px;
+	position:sticky ;
+	bottom:0 ;
+	padding-top: 5px;
+	background-color: #2b2b2b;
+}
+.inp {
+	width: calc(100% - 60px);
+	height: 100%;
+	border-radius:200vmax ;
+}
+.send {
+	height: 60px;
+	min-width: 60px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding-left: 4px;
+}
+.send > .icons{
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+}
+.send  .icon{
+	height: 60px;
+	width: 60px;
+	object-fit: contain;
+	display: flex;
+	justify-content: center;
+	align-items:center ;
+	padding:0 10px 0 0px;
+	border-radius: 50%;
+	background-color: #ababab;
+}
+.send svg{
+	height: 40px;
+	width: 40px;
+	transform: rotate(45deg);
+}
+.inp input {
+	width: 100%;
+	background-color:#ababab ;
+}
+.body {
+	display: block;
+	width: 100%;
+	height: calc(100% - 65px);
+}
+.chats {
+	display: flex;
+	width: 100%;
+	flex-direction:column;
+	overflow:scroll ;
+	height: 100%;
+}
+
+.msgDiv {
+	display: inline-block;
+	min-width: 100px;
+	max-width: 80%;
+	padding: 5px 10px;
+	background-color: #ababab;
+	height: auto;
+	margin-top: 10px;
+	border-radius:6px;
+	padding:6px;
+}
+.left {
+	margin:10px auto auto 5px;
+}
+.right {
+	margin:10px 5px auto auto;
+}
+.time {
+	height: 16px;
+	font-size:0.8rem;
+	width: 100%;
+	text-align: right;
+	margin-top: 4px;
+}
