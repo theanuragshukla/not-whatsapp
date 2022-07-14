@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET_KEY
 const cookieParser=require('cookie-parser')
 const {engine} = require('express-handlebars')
-const excludedRoutes = ['/','/new-user','/let-me-in','/add-new-user']
+const excludedRoutes = ['/','/new-user','/let-me-in','/add-new-user','/checkDup']
 app.use('/static',express.static(__dirname + "/static"))
 app.use(express.json());
 app.use(express.urlencoded({
@@ -69,6 +69,7 @@ app.get('/user/:id',async (req,res)=>{
 	}*/
 	res.render('profile',{user:req.params.id})
 })
+
 app.post("/add-new-user",async (req,res)=>{
 	const userquery = `
 	SELECT * FROM users WHERE username = $1;
@@ -157,7 +158,7 @@ app.get('/checkAuth',async (req,res)=>{
 
 app.post('/checkDup', async (req,res)=>{
 	const toCheck=req.body.email ? "email" : "username"
-		const query = `SELECT * FROM users WHERE ${toCheck} = $1;`;
+	const query = `SELECT * FROM users WHERE ${toCheck} = $1;`;
 	const value = [req.body.data];
 	const dups = await db.query(query, value);
 	if( dups.rows.length!=0){

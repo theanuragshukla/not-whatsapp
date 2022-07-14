@@ -6,9 +6,12 @@ const lname  = document.getElementById('lname')
 const email = document.getElementById('email')
 const user = document.getElementById('user')
 const pass = document.getElementById('pass')
+const key = document.getElementById('key')
 const error = document.getElementById('error')
 
-async function signup(){
+/* Main Signup function */
+
+const signup=async()=>{
 	const res = validUser(user.value) 
 	error.innerHTML=res ? "" : "enter a valid username"
 	validateStatus(res)
@@ -16,16 +19,16 @@ async function signup(){
 	var dupUser =await fetch('/checkDup', {
 		method: 'POST',
 		headers: {
-				'Accept': 'application/json, text/plain, */*',
-				'Content-Type': 'application/json'
-			},
-			
+			'Accept': 'application/json, text/plain, */*',
+			'Content-Type': 'application/json'
+		},
+
 		crossdomain: true,
 		withCredentials:'include',
 		body:JSON.stringify({email:false,data:user.value})
 	})
 		.then(response => response.json())
-		dupUser=!dupUser.status
+	dupUser=!dupUser.status
 
 	if(dupUser){
 		error.innerHTML="username already in use"
@@ -38,7 +41,8 @@ async function signup(){
 		lname:lname.value,
 		email:email.value,
 		pass:pass.value,
-		user:user.value
+		user:user.value,
+		code:key.value
 	}
 	if(await checkAll(data)){
 		fetch('/add-new-user', {
@@ -52,7 +56,8 @@ async function signup(){
 				lname:lname.value,
 				email:email.value,
 				pass:pass.value,
-				"user":user.value
+				"user":user.value,
+				code:key.value
 			})
 		})
 			.then(res=>res.json())
@@ -61,9 +66,10 @@ async function signup(){
 					alert('account created successfully! please login')
 					location.href='/'
 				}else{
-					alert("some error occoured")
-					location.href='/'
+					error.innerHTML=res.result
 				}
+
+				validateStatus(res.status)
 			}
 			)
 	}
@@ -71,7 +77,7 @@ async function signup(){
 		alert("error")
 	}
 
-	
+
 }
 const arr = [1,2,3]
 var pos = 1
@@ -80,6 +86,8 @@ const inpDiv2 = document.getElementById("inpDiv2");
 const inpDiv3 = document.getElementById("inpDiv3");
 inpDiv3.style.display="none"
 inpDiv2.style.display="none"
+
+/* Function used to validate entries onspot when user press next  */
 
 const validateOnSpot =async (state) => {
 	if(state==1){
@@ -91,6 +99,7 @@ const validateOnSpot =async (state) => {
 	else if(state==2){
 		const resEmail = chkEmail(email.value)
 		const resPass = chkPass(pass.value)
+		alert(resEmail)
 		if(!resEmail){
 			error.innerHTML="enter a valid email"
 			validateStatus(resEmail)
@@ -121,7 +130,9 @@ const validateOnSpot =async (state) => {
 	}
 }
 
-async function slideInp(dir){
+/* Function to Slide between multiple input slides */
+
+const slideInp=async (dir)=>{
 	if(dir==-1){
 		pos=(pos==1)?pos:pos-1
 	}else if(dir==1){
@@ -141,6 +152,9 @@ async function slideInp(dir){
 		}
 	})
 }
+
+/* Onload function */
+
 window.onload=()=>{
 	const verify =async ()=>{
 		await fetch('/checkAuth', {
@@ -159,6 +173,8 @@ window.onload=()=>{
 	verify()
 
 }
+
+/* Checks the status of previous signup attempt */
 
 const validateStatus =(status)=>{
 	error.style.display=!status ? "initial" :"none"

@@ -1,34 +1,16 @@
 .super {
 	justify-content: flex-start;
 }
-
 .main {
-	width: 100%;
-	border-radius: 0;
 	min-height: calc(100vh - 65px);
-	justify-content: flex-start;
-	flex-direction: column;
-	position: relative;
+	background-color: #ece5dd;
 }
 .brand {
 	display: flex;
 	justify-content: center;
 	align-items:center ;
 }
-.backIcon {
-	width: 30px;
-	height: 100%;
-}
-.backIcon>svg {
-	padding: 0;
-	margin: 0;
-	height: 100%;
-	width: 100%;
-}
-.dpDiv,.dpDiv>div {
-	height: 45px;
-	width: 45px;
-}
+
 .tools {
 	width: 100%;
 	height: 65px;
@@ -39,7 +21,7 @@
 	position:sticky ;
 	bottom:0 ;
 	padding-top: 5px;
-	background-color: #2b2b2b;
+	background-color: #ece5dd;
 }
 .inp {
 	width: calc(100% - 60px);
@@ -62,7 +44,7 @@
 	align-items: center;
 
 }
-.send  .icon{
+ .icon{
 	height: 60px;
 	width: 60px;
 	object-fit: contain;
@@ -71,7 +53,7 @@
 	align-items:center ;
 	padding:0 10px 0 0px;
 	border-radius: 50%;
-	background-color: #ababab;
+	background-color: #128c7e;
 }
 .send svg{
 	height: 40px;
@@ -80,7 +62,7 @@
 }
 .inp input {
 	width: 100%;
-	background-color:#ababab ;
+	background-color:#fff;
 }
 .body {
 	display: block;
@@ -100,11 +82,15 @@
 	min-width: 100px;
 	max-width: 80%;
 	padding: 5px 10px;
-	background-color: #ababab;
+	background-color:#dcf8c6;
 	height: auto;
 	margin-top: 10px;
 	border-radius:6px;
 	padding:6px;
+}
+.msg {
+	font-size: 1rem;
+	color: #000;
 }
 .left {
 	margin:10px auto auto 5px;
@@ -118,4 +104,15 @@
 	width: 100%;
 	text-align: right;
 	margin-top: 4px;
+	color:#333;
+}
+input {
+	height: 60px;
+	width: min(80% , 500px);
+	font-size: 1.25rem;
+	border: 0px solid #fff ;
+	border-radius: 30px;
+	outline: none;
+	width: auto;
+	padding-left: 10px;
 }
