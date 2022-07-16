@@ -99,7 +99,6 @@ const validateOnSpot =async (state) => {
 	else if(state==2){
 		const resEmail = chkEmail(email.value)
 		const resPass = chkPass(pass.value)
-		alert(resEmail)
 		if(!resEmail){
 			error.innerHTML="enter a valid email"
 			validateStatus(resEmail)

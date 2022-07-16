@@ -10,11 +10,11 @@ const item = (user)=>{
 		   <div class="midInfo" onclick="(()=>{location.href='/chat/${user.username}'})()">
 		   <div class="name">
 		   <span class="nameSpan">${user.fname} ${user.lname}</span>
-		   <span class="date">18:45am</span>
+		   <span class="date">${user.lastMsg.time}</span>
 		   </div>
 		   <div class="desc">
 		   <span>
-		   Dolor dolores magnam tempora praesentium ducimus! Repellat debitis ipsam commodi explicabo minima Rem praesentium eos minima ipsum ratione sequi, error.
+		  ${user.username==user.lastMsg.sender ?user.fname:"you"}: ${user.lastMsg.message}
 		   </span>
 		   </div>
 		   </div>

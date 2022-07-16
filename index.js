@@ -242,28 +242,39 @@ app.post('/get-all-unique-contacts',async(req,res)=>{
 	const user = req.usrProf.username
 	const query = `SELECT distinct room FROM chats WHERE room ilike '%*${user}*%';`
 	const {rows} = await db.query(query, [])
-	const ret = (rows.map(room=>{
-		getLastMessage(room)
-		return room.room.replaceAll(user,'').replaceAll('*','')
-	}))
-	const data = await getUsers(ret)
+	let lastMessages = []
+	const ret = []
+	for(let i = 0;i<rows.length;i++){
+		const room = rows[i]
+		lastMessages=[...lastMessages, await getLastMessage(room)]
+		ret.push(room.room.replaceAll(user,'').replaceAll('*',''))
+	}
+	const data = await getUsers(ret,lastMessages)
 	res.json(data)
 })
 
 const getLastMessage = async(room) => {
-//	console.log(room.room)
-	const query = `select distinct on (room) sender, time, message from chats where room = $1;`
+	const query = `select room,sender, time, message from chats where room = $1 order by timestamp desc limit 1;`
 	const {rows} = await db.query(query,[room.room])
-	console.log(rows)
+//	console.log(rows)
+	return rows[0]
 }
 
-const getUsers =async (arr) => {
+const getUsers =async (arr,lastMsgs) => {
 	var params = [];
 	for(var i = 1; i <= arr.length; i++) {
 		params.push('$' + i);	
 	}
-	const query = 'SELECT username, fname,lname FROM "users" WHERE "username" IN ('+params.join(',')+') ;'
+	const query = 'SELECT username, fname,lname FROM "users" WHERE "username" IN ('+params.join(',')+') order by username ;'
 	const {rows} = await db.query(query, arr)
+	for(let i = 0;i<rows.length;i++){
+		for(let j = 0;j<lastMsgs.length;j++){
+			if(lastMsgs[j].room.indexOf(rows[i].username)> -1){
+				rows[i].lastMsg=lastMsgs[j]
+				break
+			}
+		}
+	}
 //	console.log(rows)
 	return rows
 }
@@ -275,7 +286,6 @@ const io = require('socket.io')(server)
 io.on('connection',(socket)=>{
 
 	socket.on('newMsg',async (msg)=>{
-		console.log(socket.data)
 		const query = `INSERT INTO chats (sender,reciever,message,room,time,date) VALUES($1,$2,$3,$4,$5,$6) RETURNING *;`;
 		const values = [socket.data.user,socket.data.to,msg,socket.data.room,getTime(),getDate()];
 		const { rows } = await db.query(query, values)
@@ -292,9 +302,6 @@ io.on('connection',(socket)=>{
 		socket.join(socket.data.room)
 		const query = `SELECT sender,reciever,message,room,time,date FROM chats WHERE room = $1;`
 		const {rows} = await db.query(query, [room])
-
 		socket.emit('oldMsgs',rows)
-
-		console.log(rows)
 	})
 })
