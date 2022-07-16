@@ -27,7 +27,8 @@ app.use(async (req, res, next) => {
 	if (!authData.result)
 		res.redirect(`http://${req.header('host')}`)
 	else
-		next()
+		req.usrProf = authData.data
+	next()
 })
 app.set('view engine', 'hbs');
 
@@ -43,14 +44,16 @@ app.get('/',(req,res)=>{
 	res.sendFile(__dirname+'/index.html')
 })
 
+app.get('/start-new-chat',(req,res)=>{
+	res.sendFile(__dirname+'/new.html')
+})
+
 app.get('/new-user',(req,res)=>{
 	res.status=200
 	res.sendFile(__dirname+'/signup.html')
 })
 app.get('/user/:id',async (req,res)=>{
-	//	const token = req.cookies.token
-	//	const authData = await verifyToken(token)
-/*	const username = req.params.id
+	const username = req.params.id
 	const query = `
 	SELECT * FROM users WHERE username = $1;
 	`;
@@ -64,10 +67,9 @@ app.get('/user/:id',async (req,res)=>{
 			res.send({status:true})
 		}
 		else{
-			res.send({status:false,result:"wrong username or password"})
+			res.render('profile',{user:username,fname:rows[0].fname,lname:rows[0].lname})
 		}
-	}*/
-	res.render('profile',{user:req.params.id})
+	}
 })
 
 app.post("/add-new-user",async (req,res)=>{
@@ -107,8 +109,24 @@ app.get('/dashboard',(req,res)=>{
 	res.sendFile(__dirname+'/dash.html')
 })
 
-app.get('/chat',(req,res)=>{
-	res.status(200).sendFile(__dirname+'/chat.html')
+app.get('/chat/:id',async (req,res)=>{
+	const user = req.params.id
+	const query = `
+	SELECT * FROM users WHERE username = $1;
+	`;
+	const values = [user];
+	const { rows } = await db.query(query, values);
+	if(rows.length==0){
+		res.send({result:false,message:"user doesn't exists"})
+	}else{
+		const match = false
+		if(match){
+			res.send({status:true})
+		}
+		else{
+			res.render('chat',{user:user,fname:rows[0].fname,lname:rows[0].lname})
+		}
+	}
 })
 
 app.post("/let-me-in",async (req,res)=>{
@@ -122,12 +140,12 @@ app.post("/let-me-in",async (req,res)=>{
 	}else{
 		const match = await bcrypt.compare(req.body.pass, rows[0].pass)
 		if(match){
-		const token = jwt.sign({
+			const token = jwt.sign({
 				data:rows[0].uid
 			}, secret, { expiresIn: '7d' })
 			var expiryDate = new Date(Number(new Date()) + (7*24*3600000));
 			res.setHeader("Set-Cookie", `token=${token};expires=${expiryDate}; Path=/;HttpOnly`)
-		
+
 			res.send({status:true})
 		}
 		else{
@@ -208,8 +226,31 @@ const verifyToken = async (authToken)=>{
 	}
 }
 
+app.post('/search-user',async (req,res)=>{
+	const term = req.body.term
+	const data = []
+	if(term.length==0){
 
+		res.json(JSON.stringify(data))
+		return
+	}
+	const query = `SELECT * FROM users WHERE username ilike '${term}%';`
+	const value = []
+	const {rows} = await db.query(query, value)
+	rows.map(user=>{
+		data.push(user.username)
+	})
+	res.json(JSON.stringify(data))
+})
 
+app.post('/get-all-unique-contacts',async(req,res)=>{
+	const user = req.usrProf
+	const query = `SELECT distinct 'to' FROM chats WHERE 'from' = $1;`
+	const value = [user.username]
+	const {rows} = await db.query(query, value)
+	console.log(rows)
+	res.end()
+})
 
 const server = http.listen(port,()=>{
 	console.log(`server is running on port ${port}`)
