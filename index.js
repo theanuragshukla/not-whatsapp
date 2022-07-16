@@ -141,7 +141,7 @@ app.post("/add-new-user",async (req,res)=>{
 })
 
 app.get('/dashboard',(req,res)=>{
-			res.render('dash',{myfname:req.usrProf.fname,mylname:req.usrProf.lname, me:req.usrProf.username})
+	res.render('dash',{myfname:req.usrProf.fname,mylname:req.usrProf.lname, me:req.usrProf.username})
 })
 
 app.get('/chat/:id',async (req,res)=>{
@@ -241,29 +241,48 @@ app.post('/search-user',async (req,res)=>{
 app.post('/get-all-unique-contacts',async(req,res)=>{
 	const user = req.usrProf.username
 	const query = `SELECT distinct room FROM chats WHERE room ilike '%*${user}*%';`
-	const value = []
-	const {rows} = await db.query(query, value)
+	const {rows} = await db.query(query, [])
 	const ret = (rows.map(room=>{
+		getLastMessage(room)
 		return room.room.replaceAll(user,'').replaceAll('*','')
 	}))
-	res.json(ret)
+	const data = await getUsers(ret)
+	res.json(data)
 })
 
+const getLastMessage = async(room) => {
+//	console.log(room.room)
+	const query = `select distinct on (room) sender, time, message from chats where room = $1;`
+	const {rows} = await db.query(query,[room.room])
+	console.log(rows)
+}
+
+const getUsers =async (arr) => {
+	var params = [];
+	for(var i = 1; i <= arr.length; i++) {
+		params.push('$' + i);	
+	}
+	const query = 'SELECT username, fname,lname FROM "users" WHERE "username" IN ('+params.join(',')+') ;'
+	const {rows} = await db.query(query, arr)
+//	console.log(rows)
+	return rows
+}
 const server = http.listen(port,()=>{
 	console.log(`server is running on port ${port}`)
 })
 
 const io = require('socket.io')(server)
 io.on('connection',(socket)=>{
+
 	socket.on('newMsg',async (msg)=>{
 		console.log(socket.data)
 		const query = `INSERT INTO chats (sender,reciever,message,room,time,date) VALUES($1,$2,$3,$4,$5,$6) RETURNING *;`;
 		const values = [socket.data.user,socket.data.to,msg,socket.data.room,getTime(),getDate()];
 		const { rows } = await db.query(query, values)
-
+		socket.to(socket.data.room).emit("msg",{sender:socket.user,"msg":msg,time:getTime()})
 	})
 
-	socket.on('join-chat',(obj)=>{
+	socket.on('join-chat',async(obj)=>{
 		const room = obj.me>obj.user ? '*'+obj.user+'*'+obj.me+'*' : '*'+obj.me+'*'+obj.user+'*'
 		socket.data.user=obj.me
 		socket.data.fname = obj.myfname
@@ -271,6 +290,11 @@ io.on('connection',(socket)=>{
 		socket.data.room = room
 		socket.data.to = obj.user
 		socket.join(socket.data.room)
-		console.log(socket.data)
+		const query = `SELECT sender,reciever,message,room,time,date FROM chats WHERE room = $1;`
+		const {rows} = await db.query(query, [room])
+
+		socket.emit('oldMsgs',rows)
+
+		console.log(rows)
 	})
 })

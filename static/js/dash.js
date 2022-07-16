@@ -7,9 +7,9 @@ const item = (user)=>{
 		   <div class="dpDiv">
 		   <div></div>
 		   </div>
-		   <div class="midInfo" onclick="(()=>{location.href='/chat/${user}'})()">
+		   <div class="midInfo" onclick="(()=>{location.href='/chat/${user.username}'})()">
 		   <div class="name">
-		   <span class="nameSpan">Anurag Shukla</span>
+		   <span class="nameSpan">${user.fname} ${user.lname}</span>
 		   <span class="date">18:45am</span>
 		   </div>
 		   <div class="desc">
@@ -41,8 +41,8 @@ const getAllUsers = () => {
 	})
 	.then(res=>res.json())
 		.then((res)=>{
-			res.map(id=>{
-				list.innerHTML+=item(id)
+			res.map(user=>{
+				list.innerHTML+=item(user)
 			})
 		})
 
