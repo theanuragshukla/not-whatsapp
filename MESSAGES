@@ -1,6 +1,0 @@
- CREATE TABLE chats (
-  "id" serial not null,
-  "from" varchar(16)  NOT NULL,
-  "to" varchar(16) NOT NULL,
-  "message" text,
-  "timestamp" timestamp default current_timestamp,

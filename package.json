@@ -26,6 +26,7 @@
     "express-handlebars": "^6.0.6",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
+    "socket.io": "^4.5.1",
     "some-random-form-validator": "^1.0.1"
   }
 }

@@ -1,15 +1,13 @@
-const usrData = {
-	"username":"anurag"
-}
-const viewProfile =(id=usrData.username)=> {
+const viewProfile =(id=usrProf.me)=> {
 	location.href=`/user/${id}`
 }
-const item = `
+const item = (user)=>{
+	return (`
 		   <div class="item">
 		   <div class="dpDiv">
 		   <div></div>
 		   </div>
-		   <div class="midInfo" onclick="(()=>{location.href='/chat'})()">
+		   <div class="midInfo" onclick="(()=>{location.href='/chat/${user}'})()">
 		   <div class="name">
 		   <span class="nameSpan">Anurag Shukla</span>
 		   <span class="date">18:45am</span>
@@ -22,6 +20,9 @@ const item = `
 		   </div>
 		   </div>
 		   `
+)
+}
+
 const list = document.getElementById('list')
 
 window.onload = () =>{
@@ -38,6 +39,12 @@ const getAllUsers = () => {
 		withCredentials:'include',
 
 	})
+	.then(res=>res.json())
+		.then((res)=>{
+			res.map(id=>{
+				list.innerHTML+=item(id)
+			})
+		})
 
 }
 

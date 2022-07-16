@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken')
 const secret = process.env.JWT_SECRET_KEY
 const cookieParser=require('cookie-parser')
 const {engine} = require('express-handlebars')
-const excludedRoutes = ['/','/new-user','/let-me-in','/add-new-user','/checkDup']
+const excludedRoutes = ['/','/new-user','/let-me-in','/add-new-user','/checkDup','/checkAuth']
 app.use('/static',express.static(__dirname + "/static"))
 app.use(express.json());
 app.use(express.urlencoded({
@@ -38,6 +38,41 @@ app.engine('hbs', engine({
 	defaultLayout:false,
 	partialsDir: __dirname + '/views/partials/'
 }));
+
+function generateUid() {
+	var pass = '';
+	var str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	for (i = 1; i <= 16; i++) {
+		var char = Math.floor(Math.random()
+				* str.length + 1);
+		pass += str.charAt(char)
+	}
+	return pass;
+}
+function getDate() {
+	var now = new Date();
+	return ((now.getFullYear()) + '-' + (now.getMonth()+1) + '-' + now.getDate())
+}
+
+function getTime() {
+	var now = new Date();
+	return (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())))
+}
+const verifyToken = async (authToken)=>{
+	try{
+		const payload = jwt.verify(authToken, secret)
+		const query = `SELECT * FROM users WHERE uid = $1;`;
+		const values = [payload.data];
+		const { rows } = await db.query(query, values)
+		if(rows.length==0){
+			return {result:false}
+		}else{
+			return {result:true,data:rows[0],uid:payload.data}
+		}
+	}catch(e){
+		return {result:false}
+	}
+}
 
 app.get('/',(req,res)=>{
 	res.status=200
@@ -106,7 +141,7 @@ app.post("/add-new-user",async (req,res)=>{
 })
 
 app.get('/dashboard',(req,res)=>{
-	res.sendFile(__dirname+'/dash.html')
+			res.render('dash',{myfname:req.usrProf.fname,mylname:req.usrProf.lname, me:req.usrProf.username})
 })
 
 app.get('/chat/:id',async (req,res)=>{
@@ -124,7 +159,7 @@ app.get('/chat/:id',async (req,res)=>{
 			res.send({status:true})
 		}
 		else{
-			res.render('chat',{user:user,fname:rows[0].fname,lname:rows[0].lname})
+			res.render('chat',{myfname:req.usrProf.fname,mylname:req.usrProf.lname, me:req.usrProf.username,user:user,fname:rows[0].fname,lname:rows[0].lname})
 		}
 	}
 })
@@ -186,46 +221,6 @@ app.post('/checkDup', async (req,res)=>{
 		res.status(200).send({status:true})
 
 })
-
-function generateUid() {
-	var pass = '';
-	var str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (i = 1; i <= 16; i++) {
-		var char = Math.floor(Math.random()
-				* str.length + 1);
-		pass += str.charAt(char)
-	}
-	return pass;
-}
-
-function getDate() {
-	var now = new Date();
-	return ((now.getFullYear()) + '-' + (now.getMonth()+1) + '-' + now.getDate())
-}
-
-function getTime() {
-	var now = new Date();
-	return (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())))
-}
-
-
-
-const verifyToken = async (authToken)=>{
-	try{
-		const payload = jwt.verify(authToken, secret)
-		const query = `SELECT * FROM users WHERE uid = $1;`;
-		const values = [payload.data];
-		const { rows } = await db.query(query, values)
-		if(rows.length==0){
-			return {result:false}
-		}else{
-			return {result:true,data:rows[0],uid:payload.data}
-		}
-	}catch(e){
-		return {result:false}
-	}
-}
-
 app.post('/search-user',async (req,res)=>{
 	const term = req.body.term
 	const data = []
@@ -244,16 +239,38 @@ app.post('/search-user',async (req,res)=>{
 })
 
 app.post('/get-all-unique-contacts',async(req,res)=>{
-	const user = req.usrProf
-	const query = `SELECT distinct 'to' FROM chats WHERE 'from' = $1;`
-	const value = [user.username]
+	const user = req.usrProf.username
+	const query = `SELECT distinct room FROM chats WHERE room ilike '%*${user}*%';`
+	const value = []
 	const {rows} = await db.query(query, value)
-	console.log(rows)
-	res.end()
+	const ret = (rows.map(room=>{
+		return room.room.replaceAll(user,'').replaceAll('*','')
+	}))
+	res.json(ret)
 })
 
 const server = http.listen(port,()=>{
 	console.log(`server is running on port ${port}`)
 })
 
+const io = require('socket.io')(server)
+io.on('connection',(socket)=>{
+	socket.on('newMsg',async (msg)=>{
+		console.log(socket.data)
+		const query = `INSERT INTO chats (sender,reciever,message,room,time,date) VALUES($1,$2,$3,$4,$5,$6) RETURNING *;`;
+		const values = [socket.data.user,socket.data.to,msg,socket.data.room,getTime(),getDate()];
+		const { rows } = await db.query(query, values)
 
+	})
+
+	socket.on('join-chat',(obj)=>{
+		const room = obj.me>obj.user ? '*'+obj.user+'*'+obj.me+'*' : '*'+obj.me+'*'+obj.user+'*'
+		socket.data.user=obj.me
+		socket.data.fname = obj.myfname
+		socket.data.lname = obj.mylname
+		socket.data.room = room
+		socket.data.to = obj.user
+		socket.join(socket.data.room)
+		console.log(socket.data)
+	})
+})
