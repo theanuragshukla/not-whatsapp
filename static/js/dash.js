@@ -3,7 +3,7 @@ const viewProfile =(id=usrProf.me)=> {
 }
 const item = (user)=>{
 	return (`
-		   <div class="item">
+		   <div class="item flx">
 		   <div class="dpDiv">
 		   <div></div>
 		   </div>

@@ -233,7 +233,7 @@ app.post('/search-user',async (req,res)=>{
 	const value = []
 	const {rows} = await db.query(query, value)
 	rows.map(user=>{
-		data.push(user.username)
+		data.push({username:user.username,fname:user.fname,lname:user.lname})
 	})
 	res.json(JSON.stringify(data))
 })
