@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+		<link rel="stylesheet" href="/static/css/global.css">
+		<link rel="stylesheet" href="/static/css/nav.css">
+		<link rel="stylesheet" href="/static/css/new.css">
+		<script defer src="/static/js/global.js"></script>
+		<script defer src="/static/js/new.js"></script>
+	</head>
+	<body>
+		<div class="super">
+			<div class="nav canHide">
+				<div class="brand" > 
+					<div class="backIcon" onclick="goto('/dashboard')">
+						{{> "backIcon"}}	
+					</div>						
+					<span >Select Contact</span>
+				</div>
+				<div class="icons">
+					<div class="icon"></div>
+					<div class="icon">
+						{{> "search"}}
+					</div>
+					<div class="icon rotate">
+						{{> "options"}}
+					</div>
+				</div>
+			</div>
+			<div class="main">
+				<div class="listBtn fullw flx canHide" onclick="toggleGlobalSearch(1)">
+					<div class="listBtnIcon flx" >
+						{{> "newContact"}}
+					</div>
+					<div class="btnTitle flx">
+						<span>New contact</span>
+					</div>
+				</div>
+				<div class="nav globalSearch" id="globalSearch">
+					<div class="brand" > 
+						<div class="backIcon"  onclick="toggleGlobalSearch(0)" >
+							{{> "backIcon"}}	
+						</div>					
+						<div class="searchBar fullw flx">
+							<input onkeydown="startSearch()"  id="term" type="text" placeholder="Global search">
+						</div>
+					</div>
+				</div>
+				<div class="results flx fullw canHide">
+					<div class="heading fullw">
+						<h1>previous contacts</h1>
+					</div>
+					<div id="list" class="list flx fullw"></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

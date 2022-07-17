@@ -80,7 +80,7 @@ app.get('/',(req,res)=>{
 })
 
 app.get('/start-new-chat',(req,res)=>{
-	res.sendFile(__dirname+'/new.html')
+	res.render('new')
 })
 
 app.get('/new-user',(req,res)=>{
