@@ -10,59 +10,82 @@
 	justify-content: center;
 	align-items:center ;
 }
-
 .tools {
 	width: 100%;
-	height: 65px;
+	height: 62px;
 	position: absolute;
 	bottom: 5px;
 	display: flex;
-	padding: 0 5px;
+	padding:5px;
 	position:sticky ;
 	bottom:0 ;
-	padding-top: 5px;
 	background-color: #ece5dd;
 }
 .inp {
-	width: calc(100% - 60px);
-	height: 100%;
+	width: calc(100% - 50px);
+	height: 50px;
 	border-radius:200vmax ;
+	flex-direction: row;
+	background-color: #fff;
+	overflow: hidden;
 }
 .send {
-	height: 60px;
-	min-width: 60px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding-left: 4px;
+	height: 50px;
+	width: 50px;
 }
 .send > .icons{
 	width: 100%;
 	height: 100%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
 
 }
  .icon{
-	height: 60px;
-	width: 60px;
-	object-fit: contain;
-	display: flex;
-	justify-content: center;
-	align-items:center ;
-	padding:0 10px 0 0px;
+	height: 50px;
+	width: 50px;
+	padding:0 5px 0 0px;
 	border-radius: 50%;
 	background-color: #128c7e;
 }
 .send svg{
-	height: 40px;
-	width: 40px;
+	height: 50%;
+	width: 50%;
 	transform: rotate(45deg);
 }
 .inp input {
 	width: 100%;
 	background-color:#fff;
+	color: #000;
+}
+input {
+	height: 50px;
+	width: min(80% , 500px);
+	font-size: 1.05rem;
+	outline: none;
+	border: none;
+	width: auto;
+	padding-right: 10px;
+	color:#000;
+}
+.inp .icon {
+	background-color: transparent;
+}
+.inp svg {
+	fill: #666;	
+	width: 50%;
+	height: 50%;
+	animation: jump 1s linear infinite;
+}
+@keyframes rotate{
+	100%{
+		transform: rotate(360deg);
+	}
+}
+@keyframes jump{
+	25%{
+		transform:translateY(2px) rotateX(30deg);
+	}
+	75%{
+		transform: translateY(-2px) rotateX(20deg);
+	}
 }
 .body {
 	display: block;
@@ -76,7 +99,9 @@
 	overflow:scroll ;
 	height: 100%;
 }
-
+.chats * {
+	color: initial;
+}
 .msgDiv {
 	display: inline-block;
 	min-width: 100px;
@@ -91,12 +116,14 @@
 .msg {
 	font-size: 1rem;
 	color: #000;
+	word-wrap: break-word;
+	overflow: hidden;
 }
 .left {
-	margin:10px auto auto 5px;
+	margin:4px auto auto 5px;
 }
 .right {
-	margin:10px 5px auto auto;
+	margin:4px 5px auto auto;
 }
 .time {
 	height: 16px;
@@ -106,14 +133,4 @@
 	margin-top: 4px;
 	color:#333;
 }
-input {
-	height: 60px;
-	width: min(80% , 500px);
-	font-size: 1.25rem;
-	border: 0px solid #fff ;
-	border-radius: 30px;
-	outline: none;
-	width: auto;
-	padding-left: 10px;
-	color:#000;
-}
+

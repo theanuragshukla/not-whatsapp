@@ -25,13 +25,13 @@
 						<span onclick="goto('/user/{{user}}')">{{fname}} {{lname}}</span>
 					</div>
 					<div class="icons">
-						<div class="icon">
+						<div class="icon flx">
 							{{> "voiceCall"}}
 						</div>
-						<div class="icon">
+						<div class="icon flx">
 							{{> "videoCall"}}
 						</div>
-						<div class="icon rotate">
+						<div class="icon rotate flx">
 							{{> "options"}}
 						</div>
 					</div>
@@ -42,12 +42,17 @@
 				</div>
 			</div>
 			<div class="tools">
-				<div class="inp">
+				<div class="inp flx">
+					<div class="icons flx">
+						<div onclick="" class="flx icon">
+							{{> "emoji"}}	
+						</div>
+					</div>
 					<input id="msgInp" type="text" autocomplete='off' placeholder = 'Message'>
 				</div>
-				<div class="send">
-					<div class="icons">
-						<div onclick="sendMsg()" class="icon">
+				<div class="send flx">
+					<div class="icons flx">
+						<div onclick="sendMsg()" class="flx icon">
 							{{> "send"}}	
 						</div>
 					</div>
