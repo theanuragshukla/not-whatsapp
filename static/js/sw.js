@@ -19,7 +19,7 @@ const RUNTIME = 'runtime';
 
 // A list of local resources we always want to be cached.
 const PRECACHE_URLS = [
-	'404.html'
+	'/static/404.html'
 ];
 
 // The install handler takes care of precaching the resources we always need.
@@ -77,7 +77,7 @@ var returnFromCache = function(request){
   return caches.open("offline").then(function (cache) {
     return cache.match(request).then(function (matching) {
      if(!matching || matching.status == 404) {
-       return cache.match("offline.html");
+       return cache.match("/static/404.html");
      } else {
        return matching;
      }
