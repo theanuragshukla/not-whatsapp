@@ -27,6 +27,9 @@ const list = document.getElementById('list')
 
 window.onload = () =>{
 	getAllUsers()
+	if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/static/js/sw.js');
+}
 }
 const getAllUsers = () => {
 	fetch('/get-all-unique-contacts',{
