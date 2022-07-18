@@ -1,8 +1,9 @@
 const express = require('express')
 const app = express()
+const cors = require('cors')
 const http = require('http').Server(app)
 const db = require("./config/database");
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 5000
 const bcrypt = require("bcryptjs")
 const saltRounds=10
 const jwt = require('jsonwebtoken')
@@ -10,6 +11,7 @@ const secret = process.env.JWT_SECRET_KEY
 const cookieParser=require('cookie-parser')
 const {engine} = require('express-handlebars')
 const excludedRoutes = ['/','/new-user','/let-me-in','/add-new-user','/checkDup','/checkAuth']
+app.use(cors())
 app.use('/static',express.static(__dirname + "/static"))
 app.use(express.json());
 app.use(express.urlencoded({
